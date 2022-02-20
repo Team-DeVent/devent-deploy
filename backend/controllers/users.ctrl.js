@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken';
 import data from '../config/jwt.js';
 
-import { encryptPassword, checkAvailableUser, grantToken } from '../services/users.serv.js';
-
-import { createUser, loadUserinfo, grantAuthorization } from '../models/users.model.js';
 
 let jwtSecret = data.secret;
 
