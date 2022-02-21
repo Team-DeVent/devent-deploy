@@ -6,9 +6,11 @@
 ## To-Do
 
 * [x] 웹훅 받기
-* [ ] 도커 연동
+* [x] 도커 연동
+* [x] 도커 - 깃허브 이미지 생성
+* [ ] 도커 컨테이너 생성
 * [x] git clone and download
-* [ ] fix git clone event
+* [x] fix git clone event
 
 
 

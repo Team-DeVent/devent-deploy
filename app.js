@@ -8,7 +8,7 @@ async function startExpressServer() {
   
     await loaderExpress.init(app);
   
-    app.listen(9002, err => {
+    app.listen(9003, err => {
         console.log(`[ + ] The server is running.`);
     });
 }

@@ -1,11 +1,47 @@
 import jwt from 'jsonwebtoken';
+import exec from 'child_process';
+import EventEmitter from 'events';
+import Dockerode from 'dockerode';
+import { v4 as uuidv4 } from 'uuid';
+
+
 import data from '../config/jwt.js';
+import gitconfig from '../config/git.js';
 
 import { checkWebhookSecret } from '../services/webhook.serv.js'
-import { cloneRepository } from '../services/git.serv.js'
-import { createContainer } from '../services/docker.serv.js'
+
+let clone_dir = gitconfig.clone_repo_dir;
+
+const event = new EventEmitter();
+const docker = new Dockerode(); 
 
 
+event.on('clone_repository', ()  => {
+    let url = 'https://github.com/alpinelinux/docker-alpine.git';
+    let uuid = uuidv4();
+
+    console.log(`[ + ] Clone '${url}' repository.`)
+
+    
+    let child = exec.exec(`git clone ${url} ${uuid} --progress`, {
+        cwd: clone_dir
+    })
+
+    child.stdout.on('close', code => {
+        event.emit("create_container", uuid, url)
+    });
+
+});
+
+event.on('create_container', (uuid, url) => {
+    console.log(`[ + ] Created '${uuid}' image.`)
+    docker.buildImage({
+        context: `${clone_dir}/${uuid}`,
+        src: ['Dockerfile']
+    }, {t: `${uuid.replaceAll('-','')}:2.12`, remote: url}, function (err, response) {
+        //console.log(response)
+    });
+});
 
 export async function receiveWebhookFromGithub (req, res) {
     try {
@@ -24,14 +60,9 @@ export async function receiveWebhookFromGithub (req, res) {
 
 }
 
-export async function test (req, res) {
+export function test (req, res) {
     try {
-            
-        let url = 'https://github.com/alpinelinux/docker-alpine.git'
-        let branch = 'main'
-        let exec_data = await cloneRepository({url, branch})
-        //let dockers = await createContainer()
-        console.log(exec_data)
+        event.emit("clone_repository")
 
     
         res.status(200).json({status:1})
