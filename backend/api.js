@@ -4,10 +4,10 @@ const router = Router();
 import { check } from './middlewares/token.js';
 
 
-import users from './routes/users.js';
+import webhook from './routes/webhook.js';
 
 
 
-router.use('/users', users);
+router.use('/webhook', webhook);
 
 export default router;

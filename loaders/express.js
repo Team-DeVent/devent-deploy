@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { engine } from 'express-handlebars';
 
 
+
 import apiRouter from '../backend/api.js';
 import mainRouter from '../frontend/routes/main.js';
 
@@ -18,6 +19,12 @@ export async function init (app) {
     app.set("view engine", "hbs");    
     app.set('views','./frontend/views');
     app.disable('x-powered-by');
+
+    if (process.env.NODE_ENV === 'prod') {
+        console.log('[ + ] Production mode.')
+    } else {
+        console.log("[ + ] Development mode.")
+    }
     
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended : true}));

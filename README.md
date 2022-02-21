@@ -16,9 +16,3 @@
 ```
 npm run start
 ```
-**테스트**
-
-```
-npm run test
-```
-
