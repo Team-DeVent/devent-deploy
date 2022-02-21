@@ -5,7 +5,7 @@ const router = Router();
 import { receiveWebhookFromGithub } from '../controllers/webhook.ctrl.js';
 
 
-router.get('/github', receiveWebhookFromGithub);
+router.post('/github', receiveWebhookFromGithub);
 
 
 export default router;
