@@ -8,6 +8,20 @@
     font-family: 'Noto Sans KR', sans-serif;
     font-weight: 500 !important;
 }
+.navbar-toggler {
+    outline: none;
+    border-color: transparent !important;
+    box-shadow: transparent;
+}
+
+.navbar-toggler > .icon-close {
+    display: none;
+}
+
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
+}
 
 .btn-outline-light:hover {
     color: #212529 !important;
