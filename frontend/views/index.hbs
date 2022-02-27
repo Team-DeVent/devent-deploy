@@ -90,42 +90,6 @@
 
     {{> footer}}
 
-    <script>
-        // Test Ground
-
-        //getFeed(1)
-        getFeeeeeeeeeeed()
-        try {
-            let token = getToken('user')
-            if (checkToken(token)) {
-                document.querySelector("#login_box").innerHTML = `<button class="btn btn-danger font-weight-md text-light btn-lg px-4 btn-rounded" onclick="logout()"><i class="fas fa-user-minus"></i> 로그아웃</button>`
-                document.querySelector("#intro").innerText = '사용자로 로그인 완료'
-            }
-        } catch (error) {
-            
-        }
-
-        
-
-        async function getFeeeeeeeeeeed() {
-            let data = await getFeedRange(0)
-
-            document.querySelector('#logs').innerHTML = JSON.stringify(data)
-        }
-
-        async function appendFeeeeeeeeeeed() {
-            await insertFeed(document.querySelector("#exampleFormControlTextarea1").value)
-
-            setTimeout(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: '피드 작성 완료',
-                    showConfirmButton: false,
-                    timer: 1000
-                })
-            }, 300);
-        }
-    </script>
 
   </body>
 </html>

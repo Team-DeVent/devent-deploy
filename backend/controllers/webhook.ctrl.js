@@ -1,11 +1,10 @@
-import jwt from 'jsonwebtoken';
 import exec from 'child_process';
 import EventEmitter from 'events';
 import Dockerode from 'dockerode';
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
 
 
-import data from '../config/jwt.js';
 import gitconfig from '../config/git.js';
 
 import { checkWebhookSecret } from '../services/webhook.serv.js'
@@ -34,16 +33,40 @@ event.on('clone_repository', (github_url)  => {
 });
 
 event.on('create_image', (uuid, url) => {
-    console.log(`[ + ] Created '${uuid}' image.`)
-    let uuid_replaced = uuid.replaceAll('-','')
-    let image_tag = `${uuid_replaced}:2.12`
-    docker.buildImage({
-        context: `${clone_dir}/${uuid}`,
-        src: ['Dockerfile']
-    }, {t: image_tag, remote: url}, function (err, response) {
-        //console.log(response)
-        event.emit("create_container", image_tag, uuid_replaced)
+    fs.readFile(`${clone_dir}/${uuid}/package.json`, 'utf8', (error, json) => {
+        console.log(`[ + ] Get package.json`)
+        let uuid_replaced = uuid.replaceAll('-','')
+        let json_data, package_name_replaced, image_tag, version;
+
+        if (error) {
+            image_tag = `${uuid_replaced}:1.0`
+        } else {
+            json_data = JSON.parse(json);
+            package_name_replaced = json_data.name.replaceAll('-','')
+            version = json_data.version.split(".")
+            image_tag = `${package_name_replaced}:${version[0]+"."+version[1]}`
+        }
+
+        let child = exec.exec(`docker build --tag ${image_tag} .`, {
+            cwd: `${clone_dir}/${uuid}/`
+        })
+    
+        child.stdout.on('close', code => {
+            console.log(`[ + ] Created '${image_tag}' image.`)
+
+            event.emit("create_container", image_tag, uuid_replaced)
+        });
+
+        /*
+        docker.buildImage({
+            context: `${clone_dir}/${uuid}`,
+            src: ['Dockerfile']
+        }, {t: image_tag}, function (err, response) {
+
+        });
+        */
     });
+
 });
 
 event.on("create_container", (image_tag, uuid_replaced) => {
@@ -82,7 +105,7 @@ export async function receiveWebhookFromGithub (req, res) {
 
 export function test (req, res) {
     try {
-        event.emit("clone_repository", "https://github.com/alpinelinux/docker-alpine.git")
+        event.emit("clone_repository", "https://github.com/Team-DeVent/devent-imageserver.git")
 
     
         res.status(200).json({status:1})
