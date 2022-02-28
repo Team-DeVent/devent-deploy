@@ -13,6 +13,7 @@
 * [x] fix git clone event
 * [x] 도커 컨테이너 이미지 태그 수정
 * [x] 도커 컨테이너 버전관리
+* [x] event 로직 분리
 
 
 
