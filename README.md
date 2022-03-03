@@ -17,7 +17,7 @@
 
 
 
-## 실행
+## Execute
 
 
 **실행**
@@ -39,11 +39,26 @@ npm run start:dev
 ```
 
 
-## webhook
+## Webhook
 
 
 **url**
 
 ```
 https://test.test/api/webhook/github
+```
+
+
+## Preferences
+
+**create config file**
+
+./backend/config/setting.js
+
+```
+export default 
+{
+    "GITHUB_SECRET":"<github_webhook_secret>",
+    "CLONE_REPO_DIR":"<github_repo_local_dir>"
+}
 ```

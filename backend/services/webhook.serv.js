@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import data from '../config/webhook.js';
+import data from '../config/setting.js';
 import crypto from 'crypto';
 
-let webhook_secret = data.secret;
+let webhook_secret = data.GITHUB_SECRET;
 
 export async function checkWebhookSecret(req) {
     try {

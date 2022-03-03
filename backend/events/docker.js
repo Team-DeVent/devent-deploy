@@ -4,10 +4,10 @@ import Dockerode from 'dockerode';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 
-import gitconfig from '../config/git.js';
+import gitconfig from '../config/setting.js';
 
 
-let clone_dir = gitconfig.clone_repo_dir;
+let clone_dir = gitconfig.CLONE_REPO_DIR;
 
 const event = new EventEmitter();
 const docker = new Dockerode(); 
