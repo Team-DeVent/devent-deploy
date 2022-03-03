@@ -14,6 +14,7 @@
 * [x] 도커 컨테이너 이미지 태그 수정
 * [x] 도커 컨테이너 버전관리
 * [x] event 로직 분리
+* [x] git clone 권한 부여
 
 
 
@@ -55,10 +56,11 @@ https://test.test/api/webhook/github
 
 ./backend/config/setting.js
 
-```
+```js
 export default 
 {
     "GITHUB_SECRET":"<github_webhook_secret>",
-    "CLONE_REPO_DIR":"<github_repo_local_dir>"
+    "CLONE_REPO_DIR":"<github_repo_local_dir>",
+    "ENABLE_USERS":['DipokalLab']
 }
 ```

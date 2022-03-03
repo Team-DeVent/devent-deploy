@@ -3,6 +3,7 @@ import data from '../config/setting.js';
 import crypto from 'crypto';
 
 let webhook_secret = data.GITHUB_SECRET;
+let enable_users = data.ENABLE_USERS;
 
 export async function checkWebhookSecret(req) {
     try {
@@ -27,3 +28,17 @@ export async function checkWebhookSecret(req) {
     }
 }
 
+export async function checkAuthorization(github_user_id) {
+    try {
+        let result_boolean = false;
+
+        if(enable_users.indexOf(github_user_id) >= 0)  {
+            result_boolean = true;
+        }
+
+        return result_boolean
+    } catch (err) {
+        console.log(err)
+        throw Error(err)
+    }
+}
