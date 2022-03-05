@@ -1,6 +1,8 @@
 import exec from 'child_process';
 import EventEmitter from 'events';
 import Dockerode from 'dockerode';
+import crypto from 'crypto';
+
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 
@@ -16,21 +18,22 @@ const docker = new Dockerode();
 event.on('clone_repository', (github_url)  => {
     let url = github_url;
     let uuid = uuidv4();
+    let hash = crypto.createHash('md5').update(url).digest('hex');
 
     console.log(`[ + ] Clone '${url}' repository.`)
     
-    let child = exec.exec(`git clone ${url} ${uuid} --progress`, {
+    let child = exec.exec(`git clone ${url} ${hash} --progress`, {
         cwd: clone_dir
     })
 
     child.stdout.on('close', code => {
-        event.emit("create_image", uuid, url)
+        event.emit("create_image", hash, uuid, url)
     });
 
 });
 
-event.on('create_image', (uuid, url) => {
-    fs.readFile(`${clone_dir}/${uuid}/package.json`, 'utf8', (error, json) => {
+event.on('create_image', (hash, uuid, url) => {
+    fs.readFile(`${clone_dir}/${hash}/package.json`, 'utf8', (error, json) => {
         console.log(`[ + ] Get package.json`)
         let uuid_replaced = uuid.replaceAll('-','')
         let json_data, package_name_replaced, image_tag, version;
@@ -45,21 +48,50 @@ event.on('create_image', (uuid, url) => {
         }
 
         let child = exec.exec(`docker build --tag ${image_tag} .`, {
-            cwd: `${clone_dir}/${uuid}/`
+            cwd: `${clone_dir}/${hash}/`
         })
     
         child.stdout.on('close', code => {
             console.log(`[ + ] Created '${image_tag}' image.`)
 
-            event.emit("create_container", image_tag, uuid_replaced)
+            event.emit("check_container", image_tag, hash)
         });
     });
 });
 
-event.on("create_container", (image_tag, uuid_replaced) => {
-    docker.createContainer({Image: image_tag, name: `${uuid_replaced}-test`}, function (err, container) {
+
+event.on("check_container", (image_tag, hash) => {
+    docker.listContainers({
+        "limit": 1,
+        "filters": `{"name": ["${hash}-test"]}`
+    }, function(err, containers) {
+        if(err) {
+            console.log(err)
+        } else{
+            try {
+                //console.log(containers[0].Id)
+                var container = docker.getContainer(containers[0].Id);
+                container.stop(function (err, data) {
+                    console.log(`[ + ] Stopped '${hash}' container.`)
+                    container.remove(function (err, data) {
+                        console.log(`[ + ] Removed '${hash}' container.`)
+                        event.emit("create_container", image_tag, hash)
+                    });
+                })
+            } catch (error) {
+                event.emit("create_container", image_tag, hash)
+            }
+
+
+        }
+    });
+})
+
+
+event.on("create_container", (image_tag, hash) => {
+    docker.createContainer({Image: image_tag, name: `${hash}-test`}, function (err, container) {
         container.start(function (err, data) {
-            console.log(`[ + ] Created '${uuid_replaced}' container.`)
+            console.log(`[ + ] Created '${hash}' container.`)
 
         });
     });
