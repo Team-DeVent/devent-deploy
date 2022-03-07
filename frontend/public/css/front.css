@@ -48,6 +48,10 @@
     font-weight: 500 !important;
 }
 
+.lead {
+    word-break:keep-all;
+}
+
 .card-title{
     font-family: 'Noto Sans KR', sans-serif;
 

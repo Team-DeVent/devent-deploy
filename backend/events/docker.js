@@ -89,12 +89,23 @@ event.on("check_container", (image_tag, hash) => {
 
 
 event.on("create_container", (image_tag, hash) => {
-    docker.createContainer({Image: image_tag, name: `${hash}-test`}, function (err, container) {
-        container.start(function (err, data) {
-            console.log(`[ + ] Created '${hash}' container.`)
-
-        });
+    fs.readFile(`${clone_dir}/${hash}/deployenv`, 'utf8', (error, data) => {
+        if (error) {
+            console.log("[ + ] Fail. ")
+        } else {
+            let env = String(data).split(",")
+            docker.createContainer({
+                Image: image_tag, 
+                Env: env,
+                name: `${hash}-test`}, function (err, container) {
+                container.start(function (err, data) {
+                    console.log(`[ + ] Created '${hash}' container.`)
+        
+                });
+            });
+        }
     });
+
 })
 
 export { event }

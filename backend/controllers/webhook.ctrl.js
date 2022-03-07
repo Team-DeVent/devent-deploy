@@ -30,7 +30,7 @@ export async function receiveWebhookFromGithub (req, res) {
 
 export function test (req, res) {
     try {
-        event.emit("clone_repository", "https://github.com/Team-DeVent/devent-imageserver.git")
+        event.emit("clone_repository", "https://github.com/Team-DeVent/devent-designsystem.git")
 
     
         res.status(200).json({status:1})
@@ -40,3 +40,4 @@ export function test (req, res) {
     }
 
 }
+
