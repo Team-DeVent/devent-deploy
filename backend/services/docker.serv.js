@@ -12,8 +12,10 @@ export async function getContainerInfo(container_name) {
             "limit": 1,
             "filters": `{"name": ["${container_name}"]}`
         }, function(err, containers) {
-            if(err) {
-                console.log(err)
+            if(containers[0] == undefined) {
+                resolve({
+                    isexists:0
+                })
             } else{
                 try {
                     resolve({
