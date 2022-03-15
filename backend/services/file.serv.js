@@ -1,5 +1,3 @@
-
-import { ifError } from 'assert';
 import * as fs from 'fs';
 
 
