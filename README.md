@@ -1,40 +1,40 @@
 ![head](./head.png)
 
 # devent-deploy
-도커 - 깃허브 Webhook 자동 배포
+Automatic container deployment system using Github webhook
 
 ## To-Do
 
-* [x] 웹훅 받기
-* [x] 도커 연동
-* [x] 도커 - 깃허브 이미지 생성
-* [x] 도커 컨테이너 생성
-* [x] git clone and download
-* [x] fix git clone event
-* [x] 도커 컨테이너 이미지 태그 수정
-* [x] 도커 컨테이너 버전관리
-* [x] event 로직 분리
-* [x] git clone 권한 부여
-* [x] patch container env.
+* [x] Webhook endpoint designation
+* [x] Docker interworking
+* [x] Create container image
+* [x] Create container
+* [x] Git clone and download
+* [x] Fix git clone event
+* [x] Edit image tag
+* [x] Container version control
+* [x] Event logic separation
+* [x] Auth Git clone
+* [x] Patch container env.
 
 
 
 ## Execute
 
 
-**실행**
+**start**
 
 ```
 npm run start
 ```
 
-**실행(프로덕션)**
+**start(production)**
 
 ```
 npm run start:prod
 ```
 
-**실행(개발)**
+**start(development)**
 
 ```
 npm run start:dev
@@ -44,7 +44,7 @@ npm run start:dev
 ## Webhook
 
 
-**url**
+**endpoint url**
 
 ```
 https://test.test/api/webhook/github
@@ -53,7 +53,7 @@ https://test.test/api/webhook/github
 
 ## Preferences
 
-**create config file**
+#### 1. create config file
 
 ./backend/config/setting.js
 
@@ -66,7 +66,7 @@ export default
 }
 ```
 
-**1. nginx-proxy**
+#### 2. nginx-proxy
 
 
 ```
@@ -83,7 +83,7 @@ docker run --detach \
     nginxproxy/nginx-proxy:alpine
 ```
 
-**2. nginx-proxy**
+#### 3. nginx-proxy
 
 
 ```
@@ -98,7 +98,7 @@ docker run --detach \
 
 Then create and run a './deployenv' file on the service. An example of a 'deployenv' file. Separators are commas.
 
-**nginx-proxy service setting**
+#### 4. nginx-proxy service setting
 
 ./deployenv
 
