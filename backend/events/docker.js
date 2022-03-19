@@ -7,8 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 
 import gitconfig from '../config/setting.js';
-import { getContainerInfo, removeContainer } from '../services/docker.serv.js';
-import { getFile } from '../services/file.serv.js';
+import { getContainerInfo, removeContainer, createContainer } from '../services/docker.serv.js';
+import { getFile, existDirectory, removeDirectory } from '../services/file.serv.js';
 
 
 let clone_dir = gitconfig.CLONE_REPO_DIR;
@@ -23,14 +23,23 @@ event.on('clone_repository', async (github_url)  => {
     let hash = crypto.createHash('md5').update(url).digest('hex');
 
     console.log(`[ + ] Clone '${url}' repository.`)
-    
-    let child = exec.exec(`git clone ${url} ${hash} --progress`, {
-        cwd: clone_dir
-    })
 
-    child.stdout.on('close', code => {
-        event.emit("create_image", hash, uuid, url)
-    });
+    let check_dir = await existDirectory(`${clone_dir}/${hash}/`)
+    let remove_dir = await removeDirectory(`${clone_dir}/${hash}/`)
+
+    if ((check_dir.isexists == 1 && remove_dir.isremoved == 1) ||
+        (check_dir.isexists == 0)) {
+
+        let child = exec.exec(`git clone ${url} ${hash} --progress`, {
+            cwd: clone_dir
+        })
+    
+        child.stdout.on('close', code => {
+            event.emit("create_image", hash, uuid, url)
+        });
+    }
+
+
 
 });
 
@@ -95,12 +104,11 @@ event.on("create_container", async (image_tag, hash) => {
             "HostPort": docker_port
         }]
 
-        docker.createContainer(configs, function (err, container) {
-            container.start(function (err, data) {
-                console.log(`[ + ] Created '${hash}' container.`)
-    
-            });
-        });
+        let is_created = await createContainer(configs)
+        if (is_created.status == 1) {
+            console.log(`[ + ] Created '${hash}' container.`)
+        }
+
     } else {
         console.log("[ + ] Fail. ")
     }

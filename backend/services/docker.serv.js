@@ -47,3 +47,17 @@ export async function removeContainer(container) {
 
     return result
 }
+
+export async function createContainer(configs) {
+    const result = new Promise((resolve, rejects) => {
+        docker.createContainer(configs, function (err, container) {
+            container.start(function (err, data) {
+                resolve({
+                    status:1
+                })    
+            });
+        });
+    })
+
+    return result
+}
