@@ -22,7 +22,7 @@ export async function receiveWebhookFromGithub (req, res) {
     
         res.status(200).json({status:1})
     } catch (error) {
-        console.loh(error)
+        console.log(error)
         res.status(500).json({status:0})
     }
 
@@ -30,7 +30,12 @@ export async function receiveWebhookFromGithub (req, res) {
 
 export function test (req, res) {
     try {
-        event.emit("clone_repository", "https://github.com/Team-DeVent/devent-designsystem.git")
+        let url = req.body.git;
+        console.log("[ + ] Git URL", url)
+        if (url != undefined) {
+            event.emit("clone_repository", url)
+
+        }
 
     
         res.status(200).json({status:1})
