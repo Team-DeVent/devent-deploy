@@ -51,7 +51,7 @@ export async function removeContainer(container) {
 export async function createContainer(configs) {
     const result = new Promise((resolve, rejects) => {
         docker.createContainer(configs, function (err, container) {
-            container.start(function (err, data) {
+            container.start(function (err1, data) {
                 resolve({
                     status:1
                 })    

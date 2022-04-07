@@ -1,4 +1,3 @@
-import cors from 'cors';
 
 
 const whitelist = (req, res, next) => {

@@ -92,7 +92,7 @@ event.on("create_container", async (image_tag, hash) => {
     let docker_file = await getFile(`${clone_dir}/${hash}/Dockerfile`)
     if (result.isexists == 1) {
         let env = String(result.data).split(",")
-        let docker_port = (docker_file.data.split("EXPOSE")[1].replace(" ",""))
+        let docker_port = (docker_file.data.split("EXPOSE")[1].replace(/[&\/\\#,+()$~%.'"A-Za-z]|\s/g,""))
 
         let configs = {
             Image: image_tag, 
