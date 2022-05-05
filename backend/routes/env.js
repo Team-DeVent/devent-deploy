@@ -7,6 +7,7 @@ import { whitelist } from '../middlewares/whitelist.js';
 
 
 router.post('/', whitelist, env.insert);
+router.get('/:hash', whitelist, env.get);
 
 
 export default router;
