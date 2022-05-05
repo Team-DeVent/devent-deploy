@@ -27,7 +27,8 @@ event.on('clone_repository', async (github_url)  => {
     let check_dir = await existDirectory(`${clone_dir}/${hash}/`)
     let remove_dir = await removeDirectory(`${clone_dir}/${hash}/`)
 
-    if ((check_dir.isexists == 1 && remove_dir.isremoved == 1) ||
+    if ((check_dir.isexists == 1 && 
+        remove_dir.isremoved == 1) ||
         (check_dir.isexists == 0)) {
 
         let child = exec.exec(`git clone ${url} ${hash} --progress`, {

@@ -10,6 +10,8 @@ async function startExpressServer() {
   
     app.listen(9003, err => {
         console.log(`[ + ] The server is running.`);
+        console.log(`[ + ] localhost:9003`);
+
     });
 }
   
