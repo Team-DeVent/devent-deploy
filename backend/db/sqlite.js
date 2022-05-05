@@ -9,7 +9,7 @@ let db_dir = path.join(__dirname, "deploy.db");
 let conn = sqlite3.verbose()
 
 
-const db = new conn.Database(db_dir,  (err) => {
+const db = new conn.Database(db_dir, async (err) => {
     if (err) {
         console.error(err.message);
         console.error(db_dir)
@@ -21,7 +21,7 @@ const db = new conn.Database(db_dir,  (err) => {
 const sql_create = `create table IF NOT EXISTS repo_config (
 	idx integer primary key autoincrement, 
 	repo_name text, 
-	repo_hash text, 
+	repo_hash text type UNIQUE, 
 	env text
 );`;
   

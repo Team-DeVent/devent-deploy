@@ -10,6 +10,8 @@ import gitconfig from '../config/setting.js';
 import { getContainerInfo, removeContainer, createContainer } from '../services/docker.serv.js';
 import { getFile, existDirectory, removeDirectory } from '../services/file.serv.js';
 
+import * as envserv from '../services/env.serv.js'
+
 
 let clone_dir = gitconfig.CLONE_REPO_DIR;
 
@@ -27,9 +29,18 @@ event.on('clone_repository', async (github_url)  => {
     let check_dir = await existDirectory(`${clone_dir}/${hash}/`)
     let remove_dir = await removeDirectory(`${clone_dir}/${hash}/`)
 
+    let repo = {
+        name: url,
+        hash: hash,
+        env: ''
+    }
+
+
     if ((check_dir.isexists == 1 && 
         remove_dir.isremoved == 1) ||
         (check_dir.isexists == 0)) {
+            let data = await envserv.insert(repo)
+
 
         let child = exec.exec(`git clone ${url} ${hash} --progress`, {
             cwd: clone_dir
