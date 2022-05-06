@@ -24,14 +24,16 @@ export async function get (repo_hash) {
         await db.serialize();
 
         const query = `SELECT repo_name, repo_hash, env FROM repo_config WHERE repo_hash = ?`;
+        const query_all = `SELECT repo_name, repo_hash, env FROM repo_config`;
+
         const data = await new Promise((resolve, reject) => {
-            db.all(query, [`${repo_hash}`], function(err,row){
+            db.all(repo_hash != 'all' ? query : query_all, repo_hash != 'all' ? [`${repo_hash}`] : [], function(err,row){
                 let status = typeof row !== 'undefined'
                 
                 if (status == true) {
                     resolve({
                         status: status, 
-                        data: row[0]
+                        data: row
                     })
 
                 } else {

@@ -39,7 +39,6 @@ event.on('clone_repository', async (github_url)  => {
     if ((check_dir.isexists == 1 && 
         remove_dir.isremoved == 1) ||
         (check_dir.isexists == 0)) {
-            let data = await envserv.insert(repo)
 
 
         let child = exec.exec(`git clone ${url} ${hash} --progress`, {
@@ -102,8 +101,10 @@ event.on("check_container", async (image_tag, hash) => {
 event.on("create_container", async (image_tag, hash) => {
     let result = await getFile(`${clone_dir}/${hash}/deployenv`)
     let docker_file = await getFile(`${clone_dir}/${hash}/Dockerfile`)
-    if (result.isexists == 1) {
-        let env = String(result.data).split(",")
+    let docker_env = await envserv.get(hash)
+
+    if (result.isexists == 1 && docker_env.status == 1) {
+        let env = String(docker_env.data[0].env).split(",")
         let docker_port = (docker_file.data.split("EXPOSE")[1].replace(/[&\/\\#,+()$~%.'"A-Za-z]|\s/g,""))
 
         let configs = {
