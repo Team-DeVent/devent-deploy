@@ -7,6 +7,7 @@
 .navbar-brand {
     font-family: 'Noto Sans KR', sans-serif;
     font-weight: 500 !important;
+    color: #ffffff !important;
 }
 .navbar-toggler {
     outline: none;
@@ -46,8 +47,19 @@
     font-family: 'Noto Sans KR', sans-serif;
     word-break: keep-all;
     font-weight: 500 !important;
+    color: #ffffff !important;
+
+}
+.font-link {
+    color: #ffffff !important;
 }
 
+.modal-content {
+    background-color: #2b2f33;
+}
+.modal-title {
+    color: #ffffff !important;
+}
 .lead {
     word-break:keep-all;
 }
