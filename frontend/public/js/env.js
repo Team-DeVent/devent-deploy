@@ -2,9 +2,9 @@ class Env {
     constructor() {
     }
 
-    async get(feed_idx) {
+    async get(hash) {
 
-        let response = await fetch(`/api/env/${feed_idx}`, {
+        let response = await fetch(`/api/env/${hash}`, {
             method: "GET"
         });
     
@@ -19,6 +19,15 @@ class Env {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: `name=${name}&env=${env}`
+        });
+    
+        let data = response.json();
+        return data;
+    }
+
+    async remove(hash) {
+        let response = await fetch(`/api/env/${hash}`, {
+            method: "DELETE"
         });
     
         let data = response.json();

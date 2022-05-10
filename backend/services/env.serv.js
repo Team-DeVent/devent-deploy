@@ -51,3 +51,34 @@ export async function get (repo_hash) {
         return { status: -1 }
     }
 }
+
+export async function remove (repo_hash) {
+    try {
+        db.serialize();
+
+        const query = `DELETE FROM repo_config WHERE repo_hash = ?`;
+
+        const data = await new Promise((resolve, reject) => {
+            db.all(query, [repo_hash], function(err,row){
+                console.log(row) 
+
+                if (row) {
+                    resolve({
+                        status: 1
+                    })
+
+                } else {
+                    resolve({ 
+                        status: -1
+                    })
+                }        
+            });
+        })
+      
+        return data
+
+    } catch (error) {
+        console.log(error)
+        return { status: -1 }
+    }
+}

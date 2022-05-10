@@ -34,3 +34,17 @@ export async function get (req, res) {
     }
 
 }
+
+export async function remove (req, res) {
+    try {
+        let repo_hash = String(req.params.hash || '');
+        console.log(repo_hash)
+        let result = await envserv.remove(repo_hash)
+    
+        res.status(200).json({status:1})
+
+    } catch (error) {
+        res.status(500).json({status:0})
+    }
+
+}
