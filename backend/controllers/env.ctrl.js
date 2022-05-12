@@ -22,7 +22,6 @@ export async function insert (req, res) {
 export async function get (req, res) {
     try {
         let repo_hash = String(req.params.hash || 'all');
-        console.log(repo_hash)
         let result = await envserv.get(repo_hash)
     
         res.status(200).json({

@@ -55,14 +55,14 @@ https://test.test/api/webhook/github
 
 #### 1. create config file
 
-./backend/config/setting.js
+./backend/config/setting.json
 
-```js
-export default 
+```json
 {
     "GITHUB_SECRET":"<github_webhook_secret>",
+    "GITHUB_PAT":"",
     "CLONE_REPO_DIR":"<github_repo_local_dir>",
-    "ENABLE_USERS":['DipokalLab']
+    "ENABLE_USERS":["DipokalLab"]
 }
 ```
 
@@ -98,10 +98,7 @@ docker run --detach \
 
 Then create and run a './deployenv' file on the service. An example of a 'deployenv' file. Separators are commas.
 
-#### 4. nginx-proxy service setting
+#### 4. update container env
 
-./deployenv
+http://localhost:9003/env
 
-```
-VIRTUAL_HOST=foo.bar.com,VIRTUAL_HOST=dds.devent.kr,LETSENCRYPT_HOST=pc.devent.kr,LETSENCRYPT_EMAIL=hhj.devent.kr,SAMPLE_ENV=env
-```

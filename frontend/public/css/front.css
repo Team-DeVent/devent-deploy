@@ -64,6 +64,13 @@
     word-break:keep-all;
 }
 
+.fa-bars {
+    color: #ffffff;
+}
+.fa-times {
+    color: #ffffff;
+}
+
 .card-title{
     font-family: 'Noto Sans KR', sans-serif;
 

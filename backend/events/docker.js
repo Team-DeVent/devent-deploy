@@ -6,14 +6,16 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 
-import gitconfig from '../config/setting.js';
+import config from '../config/setting.json' assert {type: "json"};
 import { getContainerInfo, removeContainer, createContainer } from '../services/docker.serv.js';
 import { getFile, existDirectory, removeDirectory } from '../services/file.serv.js';
 
 import * as envserv from '../services/env.serv.js'
 
 
-let clone_dir = gitconfig.CLONE_REPO_DIR;
+let clone_dir = config.CLONE_REPO_DIR;
+let github_pat = config.GITHUB_PAT;
+
 
 const event = new EventEmitter();
 const docker = new Dockerode(); 
@@ -39,9 +41,13 @@ event.on('clone_repository', async (github_url)  => {
     if ((check_dir.isexists == 1 && 
         remove_dir.isremoved == 1) ||
         (check_dir.isexists == 0)) {
+            let url_split = url.split('/')
+
+            let account_name = url_split[3]
+            let repository_name = url_split[4]
 
 
-        let child = exec.exec(`git clone ${url} ${hash} --progress`, {
+        let child = exec.exec(`git clone https://x-access-token:${github_pat}@github.com/${account_name}/${repository_name} ${hash} --progress`, {
             cwd: clone_dir
         })
     
@@ -99,11 +105,11 @@ event.on("check_container", async (image_tag, hash) => {
 
 
 event.on("create_container", async (image_tag, hash) => {
-    let result = await getFile(`${clone_dir}/${hash}/deployenv`)
+    //let result = await getFile(`${clone_dir}/${hash}/deployenv`)
     let docker_file = await getFile(`${clone_dir}/${hash}/Dockerfile`)
     let docker_env = await envserv.get(hash)
 
-    if (result.isexists == 1 && docker_env.status == 1) {
+    if (docker_env.status == 1) {
         let env = String(docker_env.data[0].env).split(",")
         let docker_port = (docker_file.data.split("EXPOSE")[1].replace(/[&\/\\#,+()$~%.'"A-Za-z]|\s/g,""))
 

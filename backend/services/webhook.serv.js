@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import data from '../config/setting.js';
+import data from '../config/setting.json' assert {type: "json"};
 import crypto from 'crypto';
 
 let webhook_secret = data.GITHUB_SECRET;
