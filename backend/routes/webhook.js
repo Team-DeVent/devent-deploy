@@ -7,7 +7,7 @@ import { whitelist } from '../middlewares/whitelist.js';
 
 
 router.post('/github', receiveWebhookFromGithub);
-router.get('/deploy', whitelist, deploy);
+router.post('/deploy', whitelist, deploy);
 
 
 export default router;
