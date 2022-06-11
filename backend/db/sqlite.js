@@ -1,5 +1,7 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
+import winston from 'winston';
+
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,10 +13,10 @@ let conn = sqlite3.verbose()
 
 const db = new conn.Database(db_dir, async (err) => {
     if (err) {
-        console.error(err.message);
-        console.error(db_dir)
+        winston.log('error', err.message);
     } else {
-        console.log('[ + ] Connected to the database.');
+        winston.log('info', 'Connected to the database.');
+
     }
 }); 
 
@@ -27,9 +29,9 @@ const sql_create = `create table IF NOT EXISTS repo_config (
   
 db.run(sql_create, err => {
     if( err ) {
-        return console.error(err.message);
+        return winston.log('error', err.message);
     }
-    console.log("[ + ] repo_config table");
+    winston.log('info', 'repo_config table');
 });
   
 

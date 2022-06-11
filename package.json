@@ -24,11 +24,14 @@
     "cookie-parser": "^1.4.6",
     "cross-env": "^7.0.3",
     "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.3",
     "dockerode": "^3.3.1",
     "express": "^4.17.2",
     "express-handlebars": "^6.0.2",
     "jsonwebtoken": "^8.5.1",
     "sqlite3": "^5.0.6",
-    "uuid": "^8.3.2"
+    "util": "^0.12.4",
+    "uuid": "^8.3.2",
+    "winston": "^3.7.2"
   }
 }

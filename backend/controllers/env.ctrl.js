@@ -1,5 +1,7 @@
 import * as envserv from '../services/env.serv.js'
 import crypto from 'crypto';
+import winston from 'winston';
+
 
 
 export async function insert (req, res) {
@@ -14,6 +16,7 @@ export async function insert (req, res) {
     
         res.status(200).json({status:1})
     } catch (error) {
+        winston.log('error', error);
         res.status(500).json({status:0})
     }
 

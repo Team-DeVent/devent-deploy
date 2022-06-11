@@ -1,7 +1,4 @@
-import EventEmitter from 'events';
 import Dockerode from 'dockerode';
-
-import * as fs from 'fs';
 
 
 const docker = new Dockerode(); 

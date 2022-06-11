@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import winston from 'winston';
+
 import { engine } from 'express-handlebars';
 
 
@@ -20,10 +22,11 @@ export async function init (app) {
     app.set('views','./frontend/views');
     app.disable('x-powered-by');
 
+
     if (process.env.NODE_ENV === 'prod') {
-        console.log('[ + ] Production mode.')
+        winston.log('info', 'Production mode.');
     } else {
-        console.log("[ + ] Development mode.")
+        winston.log('info', 'Development mode.');
     }
     
     app.use(bodyParser.json());

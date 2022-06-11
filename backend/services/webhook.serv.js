@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import data from '../config/setting.json' assert {type: "json"};
 import crypto from 'crypto';
 

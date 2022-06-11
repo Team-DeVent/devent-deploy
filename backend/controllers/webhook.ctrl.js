@@ -2,6 +2,8 @@ import { checkWebhookSecret, checkAuthorization } from '../services/webhook.serv
 import { event } from '../events/docker.js'
 import { db } from '../db/sqlite.js'
 
+import winston from 'winston';
+
 
 
 export async function receiveWebhookFromGithub (req, res) {
@@ -13,7 +15,6 @@ export async function receiveWebhookFromGithub (req, res) {
         let is_valid = await checkWebhookSecret(req)
         let is_allow = await checkAuthorization(github_username)
 
-        console.log(is_valid,is_allow,github_username)
 
         if (is_valid && is_allow) {
             event.emit("clone_repository", github_url)
@@ -30,10 +31,11 @@ export async function receiveWebhookFromGithub (req, res) {
 
 }
 
-export function test (req, res) {
+export function deploy (req, res) {
     try {
         let url = req.body.git;
-        console.log("[ + ] Git URL", url)
+        winston.log('info', 'Git URL'+url);
+
         if (url != undefined) {
             event.emit("clone_repository", url)
 

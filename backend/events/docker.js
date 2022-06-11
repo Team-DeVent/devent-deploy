@@ -2,6 +2,8 @@ import exec from 'child_process';
 import EventEmitter from 'events';
 import Dockerode from 'dockerode';
 import crypto from 'crypto';
+import winston from 'winston';
+
 
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
@@ -26,7 +28,7 @@ event.on('clone_repository', async (github_url)  => {
     let uuid = uuidv4();
     let hash = crypto.createHash('md5').update(url).digest('hex');
 
-    console.log(`[ + ] Clone '${url}' repository.`)
+    winston.log('info', `[ DOCKER ] Clone '${url}' repository.`);
 
     let check_dir = await existDirectory(`${clone_dir}/${hash}/`)
     let remove_dir = await removeDirectory(`${clone_dir}/${hash}/`)
@@ -61,7 +63,8 @@ event.on('clone_repository', async (github_url)  => {
 });
 
 event.on('create_image', async (hash, uuid, url) => {
-    console.log(`[ + ] Get package.json`)
+    winston.log('info', `[ DOCKER ] Get package.json.`);
+
     let uuid_replaced = uuid.replaceAll('-','')
     let json_data, package_name_replaced, image_tag, version;
     let result = await getFile(`${clone_dir}/${hash}/package.json`)
@@ -80,7 +83,7 @@ event.on('create_image', async (hash, uuid, url) => {
     })
 
     child.stdout.on('close', code => {
-        console.log(`[ + ] Created '${image_tag}' image.`)
+        winston.log('info', `[ DOCKER ] Created '${image_tag}' image.`);
 
         event.emit("check_container", image_tag, hash)
     });
@@ -94,7 +97,8 @@ event.on("check_container", async (image_tag, hash) => {
         let container = docker.getContainer(data.container.Id);
         let isremoved = await removeContainer(container);
         if (isremoved.status == 1) {
-            console.log(`[ + ] Removed '${hash}' container.`)
+            winston.log('info', `[ DOCKER ] Removed '${hash}' container`);
+
             event.emit("create_container", image_tag, hash)
         }
 
@@ -125,11 +129,12 @@ event.on("create_container", async (image_tag, hash) => {
 
         let is_created = await createContainer(configs)
         if (is_created.status == 1) {
-            console.log(`[ + ] Created '${hash}' container.`)
+            winston.log('info', `[ DOCKER ] Created '${hash}' container.`);
+
         }
 
     } else {
-        console.log("[ + ] Fail. ")
+        winston.log('error', `[ DOCKER ] Fail.`);
     }
 })
 

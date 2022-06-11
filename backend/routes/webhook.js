@@ -2,12 +2,12 @@ import { Router } from 'express';
 const router = Router();
 
 
-import { test,receiveWebhookFromGithub } from '../controllers/webhook.ctrl.js';
+import { deploy,receiveWebhookFromGithub } from '../controllers/webhook.ctrl.js';
 import { whitelist } from '../middlewares/whitelist.js';
 
 
 router.post('/github', receiveWebhookFromGithub);
-router.get('/test', whitelist, test);
+router.get('/deploy', whitelist, deploy);
 
 
 export default router;
