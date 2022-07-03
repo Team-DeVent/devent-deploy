@@ -29,3 +29,18 @@ export async function insert (req, res) {
 
 }
 
+
+export async function get (req, res) {
+    try {
+        let repo_hash = String(req.params.hash || 'all');
+        let result = await volumeModel.get(repo_hash)
+    
+        res.status(200).json({
+            status:result.data.length >= 1 ? 1 : 0, 
+            data: result.data
+        })
+    } catch (error) {
+        res.status(500).json({status:0})
+    }
+
+}

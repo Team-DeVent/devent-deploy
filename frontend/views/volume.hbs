@@ -30,7 +30,7 @@ modal-title="볼륨 추가"
 modal-subtitle="컨테이너의 볼륨을 추가합니다.">
     <dds-content>
         <div class="mb-3">
-            <select class="form-select form-control bg-dark text-light mb-2" aria-label="Default select example" id="volume_list">
+            <select class="form-select form-control bg-dark text-light mb-2" aria-label="Default select example" id="volume_select">
                 <option selected>볼륨 추가</option>
             </select>
 
@@ -44,12 +44,27 @@ modal-subtitle="컨테이너의 볼륨을 추가합니다.">
 </dds-modal>
 
 <dds-modal
-modal-id="remove_env"
-modal-title="환경설정 제거"
-modal-subtitle="정말 환경설정을 제거하시겠습니까?">
+modal-id="get_volume"
+modal-title="볼륨 리스트">
+    <dds-content>
+        <div class="mb-3 overflow-scroll">
+            <table class="table table-dark text-light table-striped ">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">NAME</th>
+                        <th scope="col">MOUNT</th>
+                    </tr>
+                </thead>
+                <tbody class="overflow-scroll" id="lists_volume">
 
-    <dds-modal-button button-color="btn-danger" is-dismiss="false" id="remove_button" onclick="remove()">네, 제거합니다</dds-modal-button>
-    <dds-modal-button button-color="btn-dark" button-text-color="text-light" is-dismiss="true">아니요</dds-modal-button>
+                </tbody>
+            </table>
+        </div>
+    </dds-content>
+
+
+    <dds-modal-button button-color="btn-dark" button-text-color="text-light" is-dismiss="true">닫기</dds-modal-button>
 </dds-modal>
     
     <section class="bg-dark py-3" id="features "  style="overflow-x: scroll;">
@@ -60,9 +75,7 @@ modal-subtitle="정말 환경설정을 제거하시겠습니까?">
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">REPO</th>
-                            <th scope="col">ENV</th>
-                            <th scope="col">DEPLOY</th>
-                            <th scope="col">REMOVE</th>
+                            <th scope="col">GET VOLUME</th>
                         </tr>
                     </thead>
                     <tbody class="overflow-scroll"  style="overflow: scroll;" id="lists">
@@ -87,15 +100,16 @@ modal-subtitle="정말 환경설정을 제거하시겠습니까?">
 
         let html_body = {
             list: document.querySelector("#lists"),
+            list_volume: document.querySelector("#lists_volume"),
             volume_name: document.querySelector("#volume_name"),
             volume_mount: document.querySelector("#volume_mount"),
             remove_button: document.querySelector("#remove_button"),
-            volume_list: document.querySelector("#volume_list"),
+            volume_select: document.querySelector("#volume_select"),
 
         }
 
-        let remove_modal = new bootstrap.Modal(document.getElementById('remove_env'), {
-                keyboard: false
+        let get_modal = new bootstrap.Modal(document.getElementById('get_volume'), {
+            keyboard: false
         })
 
         get()
@@ -107,49 +121,65 @@ modal-subtitle="정말 환경설정을 제거하시겠습니까?">
                 let body_tr = document.createElement('tr')
                 let body_td_hash = document.createElement('td')
                 let body_td_name = document.createElement('td')
-                let body_td_env = document.createElement('td')
-                let body_td_deploy = document.createElement('td')
-                let body_td_remove = document.createElement('td')
-                let body_td_deploy_button = document.createElement('button')
-                let body_td_remove_button = document.createElement('button')
+                let body_td_volume = document.createElement('td')
+                let body_td_volume_button = document.createElement('button')
                 let body_volume_option = document.createElement('option')
 
 
 
                 body_td_hash.innerHTML = element.repo_hash
                 body_td_name.innerHTML = element.repo_name
-                body_td_env.innerHTML = element.env
 
                 body_volume_option.setAttribute("value", element.repo_hash)
                 body_volume_option.innerText = element.repo_name
 
-                html_body.volume_list.insertAdjacentElement("beforeend", body_volume_option)
+                html_body.volume_select.insertAdjacentElement("beforeend", body_volume_option)
 
-                body_td_deploy_button.classList.add('btn', 'btn-success')
-                body_td_remove_button.classList.add('btn', 'btn-danger')
+                body_td_volume_button.classList.add('btn', 'btn-success')
 
-                body_td_deploy_button.setAttribute('onclick', `container.deploy('${element.repo_name}')`)
-                body_td_remove_button.setAttribute('onclick', `removeButtonEvent('${element.repo_hash}')`)
+                body_td_volume_button.setAttribute('onclick', `getVolume('${element.repo_hash}')`)
 
-                body_td_deploy_button.innerHTML = `<i class="fas fa-truck-loading"></i>`
-                body_td_remove_button.innerHTML = `<i class="fas fa-trash-alt"></i>`
+                body_td_volume_button.innerHTML = `<i class="fas fa-box"></i>`
 
 
-                body_td_deploy.appendChild(body_td_deploy_button)
-                body_td_remove.appendChild(body_td_remove_button)
+                body_td_volume.appendChild(body_td_volume_button)
 
                 body_tr.appendChild(body_td_hash)
                 body_tr.appendChild(body_td_name)
-                body_tr.appendChild(body_td_env)
-                body_tr.appendChild(body_td_deploy)
-                body_tr.appendChild(body_td_remove)
+                body_tr.appendChild(body_td_volume)
 
                 html_body.list.insertAdjacentElement("beforeend", body_tr)
             })
         }
 
+        async function getVolume(hash) {
+            html_body.list_volume.innerHTML = ''
+            let body = await volume.get(hash);
+            body.data.forEach((element) => {
+                let body_tr = document.createElement('tr')
+                let body_td_hash = document.createElement('td')
+                let body_td_name = document.createElement('td')
+                let body_td_mount = document.createElement('td')
+
+
+
+                body_td_hash.innerHTML = element.repo_hash
+                body_td_name.innerHTML = element.volume_name
+                body_td_mount.innerHTML = element.volume_mount
+
+                body_tr.appendChild(body_td_hash)
+                body_tr.appendChild(body_td_name)
+                body_tr.appendChild(body_td_mount)
+
+                html_body.list_volume.insertAdjacentElement("beforeend", body_tr)
+            })
+
+            get_modal.show()
+
+        }
+
         async function insert() {
-            var e = document.getElementById("volume_list");
+            var e = document.getElementById("volume_select");
             var name = e.options[e.selectedIndex].text;
             let volume_name = html_body.volume_name.value
             let volume_mount = html_body.volume_mount.value

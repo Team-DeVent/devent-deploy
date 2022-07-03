@@ -18,3 +18,34 @@ export async function insert (arg) {
         return { status: -1 }
     }
 }
+
+
+export async function get (repo_hash) {
+    try {
+        await db.serialize();
+
+        const query = `SELECT * FROM volume WHERE repo_hash = ?`;
+        const query_all = `SELECT * FROM volume`;
+
+        const data = await new Promise((resolve, reject) => {
+            db.all(repo_hash != 'all' ? query : query_all, repo_hash != 'all' ? [`${repo_hash}`] : [], function(err,row){
+                let status = typeof row !== 'undefined'
+                
+                if (status == true) {
+                    resolve({
+                        status: status, 
+                        data: row
+                    })
+                } else {
+                    resolve({ 
+                        status: -1
+                    })
+                }        
+            });
+        })
+        return data
+    } catch (error) {
+        console.log(error)
+        return { status: -1 }
+    }
+}

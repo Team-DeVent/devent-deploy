@@ -13,6 +13,7 @@ import { getContainerInfo, removeContainer, createContainer } from '../services/
 import { getFile, existDirectory, removeDirectory } from '../services/file.serv.js';
 
 import * as envModel from '../models/env.model.js'
+import * as volumeModel from '../models/volume.model.js'
 
 
 let clone_dir = config.CLONE_REPO_DIR;
@@ -112,6 +113,7 @@ event.on("create_container", async (image_tag, hash) => {
     //let result = await getFile(`${clone_dir}/${hash}/deployenv`)
     let docker_file = await getFile(`${clone_dir}/${hash}/Dockerfile`)
     let docker_env = await envModel.get(hash)
+    let docker_volume = await volumeModel.get(hash)
 
     if (docker_env.status == 1) {
         let env = String(docker_env.data[0].env).split(",")
@@ -121,11 +123,19 @@ event.on("create_container", async (image_tag, hash) => {
             Image: image_tag, 
             Env: env,
             PortBindings: {},
+            Binds: [],
             name: `${hash}-test`
         }
         configs.PortBindings[docker_port+"/tcp"] = [{
             "HostPort": docker_port
         }]
+
+        if (docker_volume.status == 1) {
+            docker_volume.data.forEach(element => {
+                configs.Binds.push(`${element.volume_name}:${element.volume_mount}`)
+            });
+        }
+
 
         let is_created = await createContainer(configs)
         if (is_created.status == 1) {
