@@ -20,18 +20,32 @@ const db = new conn.Database(db_dir, async (err) => {
     }
 }); 
 
-const sql_create = `create table IF NOT EXISTS repo_config (
+const sql_create_container = `create table IF NOT EXISTS container (
 	idx integer primary key autoincrement, 
 	repo_name text, 
 	repo_hash text type UNIQUE, 
 	env text
 );`;
   
-db.run(sql_create, err => {
+db.run(sql_create_container, err => {
     if( err ) {
         return winston.log('error', err.message);
     }
-    winston.log('info', 'repo_config table');
+    winston.log('info', 'container table');
+});
+
+const sql_create_volume = `create table IF NOT EXISTS volume (
+	idx integer primary key autoincrement, 
+	repo_hash text, 
+	volume_name text type UNIQUE, 
+	volume_mount text
+);`;
+  
+db.run(sql_create_volume, err => {
+    if( err ) {
+        return winston.log('error', err.message);
+    }
+    winston.log('info', 'volume table');
 });
   
 

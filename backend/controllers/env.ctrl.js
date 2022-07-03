@@ -1,4 +1,4 @@
-import * as envserv from '../services/env.serv.js'
+import * as envModel from '../models/env.model.js'
 import crypto from 'crypto';
 import winston from 'winston';
 
@@ -12,7 +12,7 @@ export async function insert (req, res) {
             env: req.body.env
         }
 
-        let data = await envserv.insert(repo)
+        let data = await envModel.insert(repo)
     
         res.status(200).json({status:1})
     } catch (error) {
@@ -25,7 +25,7 @@ export async function insert (req, res) {
 export async function get (req, res) {
     try {
         let repo_hash = String(req.params.hash || 'all');
-        let result = await envserv.get(repo_hash)
+        let result = await envModel.get(repo_hash)
     
         res.status(200).json({
             status:result.data.length >= 1 ? 1 : 0, 
@@ -40,8 +40,7 @@ export async function get (req, res) {
 export async function remove (req, res) {
     try {
         let repo_hash = String(req.params.hash || '');
-        console.log(repo_hash)
-        let result = await envserv.remove(repo_hash)
+        let result = await envModel.remove(repo_hash)
     
         res.status(200).json({status:1})
 

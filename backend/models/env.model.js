@@ -7,7 +7,7 @@ export async function insert (repo) {
         // repo.name, repo.hash, repo.env
         await db.serialize();
 
-        const query = `REPLACE INTO repo_config(repo_name, repo_hash, env) VALUES(?, ?, ?)`;
+        const query = `REPLACE INTO container(repo_name, repo_hash, env) VALUES(?, ?, ?)`;
         const row = await db.run(query, [repo.name, repo.hash, repo.env]);
         let status = typeof row !== 'undefined'
         
@@ -23,8 +23,8 @@ export async function get (repo_hash) {
     try {
         await db.serialize();
 
-        const query = `SELECT repo_name, repo_hash, env FROM repo_config WHERE repo_hash = ?`;
-        const query_all = `SELECT repo_name, repo_hash, env FROM repo_config`;
+        const query = `SELECT repo_name, repo_hash, env FROM container WHERE repo_hash = ?`;
+        const query_all = `SELECT repo_name, repo_hash, env FROM container`;
 
         const data = await new Promise((resolve, reject) => {
             db.all(repo_hash != 'all' ? query : query_all, repo_hash != 'all' ? [`${repo_hash}`] : [], function(err,row){
@@ -56,7 +56,7 @@ export async function remove (repo_hash) {
     try {
         db.serialize();
 
-        const query = `DELETE FROM repo_config WHERE repo_hash = ?`;
+        const query = `DELETE FROM container WHERE repo_hash = ?`;
 
         const data = await new Promise((resolve, reject) => {
             db.all(query, [repo_hash], function(err,row){

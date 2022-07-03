@@ -3,6 +3,7 @@ import Dockerode from 'dockerode';
 
 const docker = new Dockerode(); 
 
+
 export async function getContainerInfo(container_name) {
     const containers = new Promise((resolve, rejects) => {
         docker.listContainers({
@@ -53,6 +54,20 @@ export async function createContainer(configs) {
                     status:1
                 })    
             });
+        });
+    })
+
+    return result
+}
+
+export async function createVolume(configs) {
+    const result = new Promise((resolve, rejects) => {
+        docker.createVolume(configs, function (err, container) {
+            if (!err) {
+                resolve({
+                    status:1
+                })
+            }
         });
     })
 

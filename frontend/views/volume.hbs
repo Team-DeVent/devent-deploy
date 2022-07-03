@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko" class="bg-dark">
+    {{> head}}
+  <body class="bg-dark">
+    {{> navbar}}
+
+
+    <header class="bg-dark py-5">
+        <div class="container px-5 pt-4 pb-2">
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center my-5">
+                        <h1 class="display-5 fw-bolder text-white font-weight-lg mb-2">볼륨</h1>
+                        <p class="lead text-white-50 font-weight-md mb-4" id="intro">볼륨 추가합니다.</p>
+                        <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#aaa">
+                            볼륨추가
+                        </button>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+<dds-modal
+modal-id="aaa"
+modal-title="볼륨 추가"
+modal-subtitle="컨테이너의 볼륨을 추가합니다.">
+    <dds-content>
+        <div class="mb-3">
+            <select class="form-select form-control bg-dark text-light mb-2" aria-label="Default select example" id="volume_list">
+                <option selected>볼륨 추가</option>
+            </select>
+
+            <input type="text" id="volume_name" class="form-control bg-dark text-light mb-2" placeholder="볼륨 이름">
+            <input type="text" id="volume_mount" class="form-control bg-dark text-light" value="/app/mount">
+
+        </div>
+    </dds-content>
+    <dds-modal-button button-color="btn-primary" is-dismiss="false" onclick="insert()">추가하기</dds-modal-button>
+    <dds-modal-button button-color="btn-dark" button-text-color="text-light" is-dismiss="true">닫기</dds-modal-button>
+</dds-modal>
+
+<dds-modal
+modal-id="remove_env"
+modal-title="환경설정 제거"
+modal-subtitle="정말 환경설정을 제거하시겠습니까?">
+
+    <dds-modal-button button-color="btn-danger" is-dismiss="false" id="remove_button" onclick="remove()">네, 제거합니다</dds-modal-button>
+    <dds-modal-button button-color="btn-dark" button-text-color="text-light" is-dismiss="true">아니요</dds-modal-button>
+</dds-modal>
+    
+    <section class="bg-dark py-3" id="features "  style="overflow-x: scroll;">
+        <div class="container px-4 my-5 overflow-scroll">
+            <div class="row gx-5">
+                <table class="table table-dark text-light table-striped ">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">REPO</th>
+                            <th scope="col">ENV</th>
+                            <th scope="col">DEPLOY</th>
+                            <th scope="col">REMOVE</th>
+                        </tr>
+                    </thead>
+                    <tbody class="overflow-scroll"  style="overflow: scroll;" id="lists">
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </section>
+
+
+
+ 
+
+    {{> footer}}
+
+    <script>
+        let env = new Env();
+        let container = new Container();
+        let volume = new Volume();
+
+        let html_body = {
+            list: document.querySelector("#lists"),
+            volume_name: document.querySelector("#volume_name"),
+            volume_mount: document.querySelector("#volume_mount"),
+            remove_button: document.querySelector("#remove_button"),
+            volume_list: document.querySelector("#volume_list"),
+
+        }
+
+        let remove_modal = new bootstrap.Modal(document.getElementById('remove_env'), {
+                keyboard: false
+        })
+
+        get()
+
+        async function get() {
+            html_body.list.innerHTML = ''
+            let body = await env.get('');
+            body.data.forEach((element) => {
+                let body_tr = document.createElement('tr')
+                let body_td_hash = document.createElement('td')
+                let body_td_name = document.createElement('td')
+                let body_td_env = document.createElement('td')
+                let body_td_deploy = document.createElement('td')
+                let body_td_remove = document.createElement('td')
+                let body_td_deploy_button = document.createElement('button')
+                let body_td_remove_button = document.createElement('button')
+                let body_volume_option = document.createElement('option')
+
+
+
+                body_td_hash.innerHTML = element.repo_hash
+                body_td_name.innerHTML = element.repo_name
+                body_td_env.innerHTML = element.env
+
+                body_volume_option.setAttribute("value", element.repo_hash)
+                body_volume_option.innerText = element.repo_name
+
+                html_body.volume_list.insertAdjacentElement("beforeend", body_volume_option)
+
+                body_td_deploy_button.classList.add('btn', 'btn-success')
+                body_td_remove_button.classList.add('btn', 'btn-danger')
+
+                body_td_deploy_button.setAttribute('onclick', `container.deploy('${element.repo_name}')`)
+                body_td_remove_button.setAttribute('onclick', `removeButtonEvent('${element.repo_hash}')`)
+
+                body_td_deploy_button.innerHTML = `<i class="fas fa-truck-loading"></i>`
+                body_td_remove_button.innerHTML = `<i class="fas fa-trash-alt"></i>`
+
+
+                body_td_deploy.appendChild(body_td_deploy_button)
+                body_td_remove.appendChild(body_td_remove_button)
+
+                body_tr.appendChild(body_td_hash)
+                body_tr.appendChild(body_td_name)
+                body_tr.appendChild(body_td_env)
+                body_tr.appendChild(body_td_deploy)
+                body_tr.appendChild(body_td_remove)
+
+                html_body.list.insertAdjacentElement("beforeend", body_tr)
+            })
+        }
+
+        async function insert() {
+            var e = document.getElementById("volume_list");
+            var name = e.options[e.selectedIndex].text;
+            let volume_name = html_body.volume_name.value
+            let volume_mount = html_body.volume_mount.value
+
+            let body = await volume.insert(name, volume_name, volume_mount);
+
+            await get();
+
+
+        }
+
+        async function removeButtonEvent(hash) {
+
+            html_body.remove_button.setAttribute('onclick', `remove('${hash}')`)
+            remove_modal.show()
+
+        }
+
+        async function remove(hash) {
+
+            let body = await env.remove(hash);
+            await get();
+
+            remove_modal.hide()
+
+        }
+
+    </script>
+
+  </body>
+</html>

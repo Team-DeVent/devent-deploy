@@ -12,7 +12,7 @@ import config from '../config/setting.json' assert {type: "json"};
 import { getContainerInfo, removeContainer, createContainer } from '../services/docker.serv.js';
 import { getFile, existDirectory, removeDirectory } from '../services/file.serv.js';
 
-import * as envserv from '../services/env.serv.js'
+import * as envModel from '../models/env.model.js'
 
 
 let clone_dir = config.CLONE_REPO_DIR;
@@ -111,7 +111,7 @@ event.on("check_container", async (image_tag, hash) => {
 event.on("create_container", async (image_tag, hash) => {
     //let result = await getFile(`${clone_dir}/${hash}/deployenv`)
     let docker_file = await getFile(`${clone_dir}/${hash}/Dockerfile`)
-    let docker_env = await envserv.get(hash)
+    let docker_env = await envModel.get(hash)
 
     if (docker_env.status == 1) {
         let env = String(docker_env.data[0].env).split(",")

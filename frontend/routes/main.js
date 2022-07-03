@@ -11,5 +11,8 @@ router.get('/env', whitelist, function(req, res) {
     res.render('env')
 });
 
+router.get('/volume', whitelist, function(req, res) {
+    res.render('volume')
+});
 
 export default router;
